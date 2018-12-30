@@ -156,9 +156,9 @@ read_cpu_data_freebsd() {
     IFS="
 "
     for _line in `grep -A2 '^CPU: ' /var/run/dmesg.boot`; do
-        if [ -n "`echo $_line | grep '^  Origin = '`" ]; then
-            vendor_id="`echo $_line | sed -e 's/^  Origin = .//' -e 's/[^A-Za-z0-9].*$//'`"
-            _cpu_id="`echo $_line | sed -e 's/^.*Id = //' -e 's/ .*$//' -e 'y/abcdef/ABCDEF/'`"
+        if [ -n "`echo $_line | egrep '^  Origin ?= ?'`" ]; then
+            vendor_id="`echo $_line | egrep '^  Origin ?= ?' | sed -E 's/^  Origin ?= ?.//' | sed -E 's/[^A-Za-z0-9].*$//'`"
+            _cpu_id="`echo $_line | egrep '^.*Id ?= ?' | sed -E 's/^.*Id ?= ?//' | sed -E 's/ .*$//' | sed -E 'y/abcdef/ABCDEF/'`"
             cpu_family=$(( ($_cpu_id & 0xF0F) >> 8 )) #FreeBSD 5.0 sh doesn't support 0x
             cpu_model=$(( (($_cpu_id & 0xF0) >> 4) + (($_cpu_id & 0xF0000) >> 12) ))
         fi
